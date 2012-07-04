@@ -11,16 +11,19 @@ exports.clocWithPath = function(rootpath) {
 
 	var done = function(sourceInfos) {
 			var totalBlankLines = 0;
-
+			var totalInlineComments = 0;
 			var total = 0;
 			if (sourceInfos.length > 0) {
 				for (var i = 0; i < sourceInfos.length; i++) {
 					total += sourceInfos[i].total;
 					totalBlankLines += sourceInfos[i].blankLines;
+					totalInlineComments += sourceInfos[i].inlineComments;
 				}
 			}
-			console.log(total);
-			console.log(totalBlankLines);
+			console.log("contain files:"+sourceInfos.length);
+			console.log("total lines  :"+total);
+			console.log("blank lines:"+totalBlankLines);
+			console.log("inlineComments:"+totalInlineComments);
 
 			console.log("ncloc end time is :" + moment().unix());
 		}
@@ -41,7 +44,7 @@ function getAllFilesInfoSync(root) {
 		var stat = fs.lstatSync(pathname);
 
 		if (!stat.isDirectory()) {
-			if(isSourceFile(pathname)) {
+			if (isSourceFile(pathname)) {
 				res.push(pathname.replace(root, '.'));
 			}
 		} else {
@@ -78,6 +81,7 @@ function clocWithFullPath(filename, proxy) {
 	var remaining = '';
 	var count = 0;
 	var blankLines = 0;
+	var inlineComments = 0;
 
 
 	input.on('data', function(data) {
@@ -86,8 +90,12 @@ function clocWithFullPath(filename, proxy) {
 		var last = 0;
 		while (index > -1) {
 			var line = remaining.substring(last, index);
-			if (line.trim() == '') {
+			var trimedLine = line.trim();
+			if (trimedLine == '') {
 				blankLines++;
+			}
+			if(trimedLine.indexOf('//') > -1){
+				inlineComments++;
 			}
 			last = index + 1;
 			count++;
@@ -98,26 +106,28 @@ function clocWithFullPath(filename, proxy) {
 	});
 
 	input.on('end', function() {
+
 		if (remaining.length > 0) {
 			count++;
 			if (remaining.trim() == '') {
 				blankLines++;
+			}
+			if(remaining.indexOf('//') > -1){
+				inlineComments++;
 			}
 		}
 		var datainfo = new SourceInfo;
 		datainfo.total = count;
 		datainfo.filename = filename;
 		datainfo.blankLines = blankLines;
+		datainfo.inlineComments = inlineComments;
 		//console.log(datainfo);
 
-
 		proxy.trigger("count_source_lines", datainfo);
-
-		// console.log(filename+":"+count);
 	});
 }
 
-function isSourceFile(filename){
+function isSourceFile(filename) {
 	if (filename.substring(filename.length - 5) == '.java') {
 		return true;
 	} else {
