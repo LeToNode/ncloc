@@ -20,10 +20,10 @@ exports.clocWithPath = function(rootpath) {
 					totalInlineComments += sourceInfos[i].inlineComments;
 				}
 			}
-			console.log("contain files:"+sourceInfos.length);
-			console.log("total lines  :"+total);
-			console.log("blank lines:"+totalBlankLines);
-			console.log("inlineComments:"+totalInlineComments);
+			console.log("contain files:" + sourceInfos.length);
+			console.log("total lines  :" + total);
+			console.log("blank lines:" + totalBlankLines);
+			console.log("inlineComments:" + totalInlineComments);
 
 			console.log("ncloc end time is :" + moment().unix());
 		}
@@ -94,7 +94,7 @@ function clocWithFullPath(filename, proxy) {
 			if (trimedLine == '') {
 				blankLines++;
 			}
-			if(trimedLine.indexOf('//') > -1){
+			if (trimedLine.indexOf('//') > -1) {
 				inlineComments++;
 			}
 			last = index + 1;
@@ -112,7 +112,7 @@ function clocWithFullPath(filename, proxy) {
 			if (remaining.trim() == '') {
 				blankLines++;
 			}
-			if(remaining.indexOf('//') > -1){
+			if (remaining.indexOf('//') > -1) {
 				inlineComments++;
 			}
 		}
@@ -122,7 +122,6 @@ function clocWithFullPath(filename, proxy) {
 		datainfo.blankLines = blankLines;
 		datainfo.inlineComments = inlineComments;
 		//console.log(datainfo);
-
 		proxy.trigger("count_source_lines", datainfo);
 	});
 }
