@@ -1,0 +1,41 @@
+{
+  "name": "ncloc",
+  "description": "An NodeJS tools for cloc.",
+  "homepage": "https://github.com/LeToNode/ncloc",
+  "keywords": [
+  ],
+  "author": {
+    "name": "Leton Li",
+    "email": "leton2008@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Leton Li",
+      "email": "leton2008@gmail.com"
+    }
+  ],
+  "bin": {
+    "ncloc": "bin/ncloc-cli.js"
+  },
+  "dependencies": {
+    "eventproxy": ">= 0.1.1",
+    "moment":     "*"
+  },
+  "devDependencies": {
+   
+  },
+  "scripts": {
+   
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/LeToNode/ncloc.git"
+  },
+  "main": "ncloc.js",
+  "version": "0.0.1",
+  "readme": "",
+  "_id": "ncloc@0.0.1",
+  "dist": {
+    "shasum": ""
+  }
+}
