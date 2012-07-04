@@ -40,7 +40,7 @@ function getAllFilesInfoSync(root) {
 	var res = [];
 	var files = fs.readdirSync(root);
 	files.forEach(function(file) {
-		var pathname = root + '/' + file
+		var pathname = root + '/' + file;
 		var stat = fs.lstatSync(pathname);
 
 		if (!stat.isDirectory()) {
@@ -59,7 +59,7 @@ function getAllFiles(root, proxy) {
 
 	fs.readdir(root, function(err, files) {
 		files.forEach(function(file) {
-			var pathname = root + '/' + file
+			var pathname = root + '/' + file;
 			var stat = fs.lstatSync(pathname);
 
 			if (!stat.isDirectory()) {
