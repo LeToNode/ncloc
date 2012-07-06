@@ -3,42 +3,40 @@ var fs = require('fs');
 var moment = require('moment');
 var EventProxy = require('eventproxy').EventProxy;
 var SourceInfo = require('./SourceInfo.js').SourceInfo;
-
+var ClocInfo = require('./ClocInfo.js').ClocInfo;
 
 
 exports.clocWithPath = function(rootpath) {
 	console.log("ncloc start time is :" + moment().unix());
-
-
 	var res = getAllFilesInfoSync(rootpath);
-	console.log("ncloc start time is :" + moment().unix());
 
 	var done = function(sourceInfos) {
-			var totalBlankLines = 0;
-			var totalInlineComments = 0;
-			var total = 0;
+			var clocInfo = new ClocInfo();
+			clocInfo.totalBlankLines = 0;
+			clocInfo.totalInlineComments = 0;
+			clocInfo.totallines = 0;
 			if (sourceInfos.length > 0) {
 				for (var i = 0; i < sourceInfos.length; i++) {
-					total += sourceInfos[i].total;
-					totalBlankLines += sourceInfos[i].blankLines;
-					totalInlineComments += sourceInfos[i].inlineComments;
+
+					clocInfo.totallines += sourceInfos[i].total;
+					clocInfo.totalBlankLines += sourceInfos[i].blankLines;
+					clocInfo.totalInlineComments += sourceInfos[i].inlineComments;
 				}
 			}
-			console.log("contain files:" + sourceInfos.length);
-			console.log("total lines  :" + total);
-			console.log("blank lines:" + totalBlankLines);
-			console.log("inlineComments:" + totalInlineComments);
+			clocInfo.files = sourceInfos.length;
+
 
 			console.log("ncloc end time is :" + moment().unix());
+			genReport("t", clocInfo, sourceInfos);
 		}
 	var proxy = new EventProxy();
 
 	proxy.after('count_source_lines', res.length, done);
 
-	res.forEach(function(filepath){
+	res.forEach(function(filepath) {
 		clocWithFullPath(filepath, proxy);
 	});
-	
+
 
 
 }
@@ -53,7 +51,7 @@ function getAllFilesInfoSync(root) {
 
 		if (!stat.isDirectory()) {
 			if (isSourceFile(pathname)) {
-				res.push(pathname);//pathname.replace(root, '.')
+				res.push(pathname); //pathname.replace(root, '.')
 			}
 		} else {
 			res = res.concat(getAllFilesInfoSync(pathname));
@@ -121,3 +119,43 @@ function isSourceFile(filename) {
 	}
 
 }
+
+function genReport(reportType, clocInfo, sourceInfos) {
+	switch (reportType) {
+	case 't':
+		reportTxt(clocInfo, sourceInfos);
+	case 'h':
+	case 'c':
+	default:
+		reportConsole(clocInfo, sourceInfos);
+
+	}
+}
+
+function reportConsole(clocInfo, sourceInfos) {
+	console.log("contain files:" + clocInfo.files);
+	console.log("total lines  :" + clocInfo.totallines);
+	console.log("blank lines:" + clocInfo.totalBlankLines);
+	console.log("inlineComments:" + clocInfo.totalInlineComments);
+
+}
+
+function reportTxt(clocInfo, sourceInfos) {
+	var report = "ncloc report\r\n";
+	report += "contain source file :" + clocInfo.files + "\r\n";
+	report += "total lines  :" + clocInfo.totallines + "\r\n";
+	report += "blank lines:" + clocInfo.totalBlankLines + "\r\n";
+	report += "inlineComments:" + clocInfo.totalInlineComments + "\r\n";
+	sourceInfos.forEach(function(sourceInfo) {
+
+		report += "filename   :" + sourceInfo.filename + ";";
+		report += "total   :" + sourceInfo.total + ";";
+		report += "blank :" + sourceInfo.blankLines + ";";
+		report += "inlineComments:" + sourceInfo.inlineComments + "\r\n";
+	});
+	fs.writeFile('report-cloc.txt', report, function(err) {
+		if (err) throw err;
+		console.log('report have  saved!');
+	});
+}
+
