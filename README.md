@@ -1,4 +1,4 @@
-#NCLOC - A count lines of code using NodeJS#
+#NCLOC - A count lines of code tool using NodeJS#
 
 ## 安装 ##
 
@@ -10,5 +10,5 @@
 
 ## 报告 ##
 1, 现在只提供控制台报告     
-2，未来考虑增加html，csv等其它格式报告        
-3, 目前只提供总行数和空行总数。只支持java源代码报告.     
+2, 未来考虑增加html，csv等其它格式报告        
+3, 目前只提供总行数和空行总数。只支持java源代码报告       
