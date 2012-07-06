@@ -5,9 +5,13 @@ var EventProxy = require('eventproxy').EventProxy;
 var SourceInfo = require('./SourceInfo.js').SourceInfo;
 
 
+
 exports.clocWithPath = function(rootpath) {
 	console.log("ncloc start time is :" + moment().unix());
+
+
 	var res = getAllFilesInfoSync(rootpath);
+	console.log("ncloc start time is :" + moment().unix());
 
 	var done = function(sourceInfos) {
 			var totalBlankLines = 0;
@@ -28,9 +32,13 @@ exports.clocWithPath = function(rootpath) {
 			console.log("ncloc end time is :" + moment().unix());
 		}
 	var proxy = new EventProxy();
+
 	proxy.after('count_source_lines', res.length, done);
 
-	getAllFiles(rootpath, proxy);
+	res.forEach(function(filepath){
+		clocWithFullPath(filepath, proxy);
+	});
+	
 
 
 }
@@ -45,7 +53,7 @@ function getAllFilesInfoSync(root) {
 
 		if (!stat.isDirectory()) {
 			if (isSourceFile(pathname)) {
-				res.push(pathname.replace(root, '.'));
+				res.push(pathname);//pathname.replace(root, '.')
 			}
 		} else {
 			res = res.concat(getAllFilesInfoSync(pathname));
@@ -53,27 +61,6 @@ function getAllFilesInfoSync(root) {
 	});
 	return res
 }
-
-
-function getAllFiles(root, proxy) {
-
-	fs.readdir(root, function(err, files) {
-		files.forEach(function(file) {
-			var pathname = root + '/' + file;
-			var stat = fs.lstatSync(pathname);
-
-			if (!stat.isDirectory()) {
-				if (isSourceFile(pathname)) {
-					clocWithFullPath(pathname, proxy);
-				}
-			} else {
-				getAllFiles(pathname, proxy);
-			}
-		});
-	});
-
-}
-
 
 function clocWithFullPath(filename, proxy) {
 
